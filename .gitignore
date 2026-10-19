@@ -1,0 +1,24 @@
+# secrets
+.env
+**/.env
+
+# python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# packaging artifacts
+*.zip
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# generated article outputs (optional local)
+**/YYYYMMDD-*/
+*.html
+!**/scripts/**
