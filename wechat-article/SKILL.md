@@ -4,25 +4,51 @@ version: 1.0.0
 display_name: 公众号爆款写稿
 display_name_en: WeChat Official Account Article Writer
 description: >-
-  按公众号爆款标题公式与 10 个结构模板写稿，避开广告法、诱导分享与导流限流红线，
-  插入封面与内配图占位符，默认将 md 转为 html。当用户要写公众号文章、推文、爆款选题、标题或成稿时使用。
+  按公众号爆款标题公式与 10 个结构模板写稿，避开合规红线，默认转 html；
+  用户已提供正文 md 时直接沿用，未提供时才按技能包生成；
+  也可把本地成稿上传到微信草稿箱（封面永久素材 + 正文图 uploadimg + draft/add，并用 draft/get 校验）。
+  当用户要写公众号文章、推文、爆款选题、成稿，或上传/发送草稿时使用。
 description_zh: >-
-  为微信公众号撰写爆款文章：随机选用结构模板、按标题规则起标题、控制排版与金句，
-  插入 image-slot 占位符，默认输出 html（用户可要求不转），并避开合规红线。
+  为微信公众号撰写爆款文章并可选上传草稿箱：无现成 md 时写稿、配图、转 html；
+  有现成 md 时沿用该文件继续配图/转 html/上传，
+  或在配置 AppID/AppSecret 后把文章与图片写入草稿箱并用详情接口校验。
 description_en: >-
-  Draft WeChat Official Account articles with a random structure template,
-  title formulas, short mobile paragraphs, quote lines, and image-slot
-  placeholders; converts Markdown to HTML by default (skippable on request),
-  while avoiding compliance red lines.
+  Draft WeChat Official Account articles with templates and image-slot placeholders,
+  or reuse an existing Markdown file when the user provides one; convert to HTML by
+  default, and optionally upload into the WeChat draft box with cover/content media
+  APIs and draft/get verification.
 ---
 
 # 公众号爆款写稿
 
 写公众号成稿，不写运营复盘。用户给主题就直接成稿；缺读者或立场时，用主题推断，不要反复追问。
 
-细则见 [references/templates.md](references/templates.md) 与 [references/compliance.md](references/compliance.md)。
+细则见 [references/templates.md](references/templates.md)、[references/compliance.md](references/compliance.md)、[references/wechat-draft.md](references/wechat-draft.md)。
 
-## 写稿前先定 4 件事
+## 正文来源：先判断有没有现成 md
+
+开工前先判断用户是否已提供可用的正文 Markdown（附件、路径、粘贴全文、或已落盘的 `.md`）。
+
+| 情况 | 做法 |
+|---|---|
+| **有现成 md** | **直接用这份 md**，不要按模板重写正文。缺封面/内配图占位符时再按下文补；已有 `images/` 则复用。随后按需出图、转 html、上传草稿。 |
+| **没有现成 md** | 按本技能包下文生成：定模板 → 写 md → 占位符出图 → 转 html → 落盘到 `时间-文章名/`。 |
+
+判定要点：
+
+1. 用户给出 `.md` 路径、成稿目录、或聊天里贴出完整正文 → 视为「有现成 md」。
+2. 用户只给主题 / 提纲 / 要点、或明确说「帮我写一篇」→ 视为「没有现成 md」，按技能包生成。
+3. 现成 md 若已是成稿目录结构，就在该目录上继续；若只是散落文件，可拷贝/整理进 `时间-文章名/` 再出图与转 html，**不要改写用户正文措辞**（除非用户明确要求改稿）。
+4. 上传草稿时同样：有现成 md/html 目录就跳过写稿，直接走上传流程。
+
+## 两种用法
+
+1. **只写稿 / 出成品**：无现成 md 时按下文写稿；有现成 md 时沿用后出图、转 html，落盘到 `时间-文章名/`（或沿用已有目录）。
+2. **上传草稿箱**：用户说「发草稿 / 上传草稿 / 同步到公众号草稿」时执行。可单独用（用户已给文章目录或 html + 图片），也可在写稿流程完成后接着跑。
+
+用户明确只要本地文件时，不要擅自上传。
+
+## 写稿前先定 4 件事（仅「没有现成 md」时）
 
 1. **结构模板**：用户没指定时，从 10 个模板里直接随机选定 1 个，选定后立刻按它写。不要查时间、不要取模、不要为了“随机”反复试探。模板编号、标题公式、摘要、转发触发器只在内部记住，用来约束这篇怎么写。不要连续默认模板 1。
  2. **标题公式**：再从 10 个标题公式里选 1 个匹配该模板的，见 templates。公众号标题 **13–25 字**（含标点），关键词前置，可用一对括号补利益点。
@@ -107,7 +133,7 @@ python scripts/md_to_html.py "YYYYMMDD-HHmm-文章名/文章名.md"
 ```
 
 - 内部仍先想好 30–50 字摘要，用来收紧开头，但不要把它写进文件。
-- 默认篇幅 **1200–1800 字**（因此必须有封面 + 至少 2 个 inline）。
+- 默认篇幅 **800–1200 字**（因此必须有封面 + 至少 2 个 inline）。
 - 用户明确要短文（<800 字）时，可以只有 cover。
 
 ## 图片占位符
@@ -157,10 +183,10 @@ aspect 会直接传给配图脚本（`generate_image.py --aspect <值>`）。只
 | 文章字数 | inline 占位符数量 |
 |---|---|
 | < 800 字 | 可以 0 个 |
-| 800–1500 字 | 必须 ≥ 2 个 |
-| > 1500 字 | 必须 2–3 个 |
+| 800–1200 字（默认） | 必须 ≥ 2 个 |
+| > 1200 字（用户明确要求加长时） | 必须 2–3 个 |
 
-只放 cover、中长文没有 inline，视为没写完。
+只放 cover、默认篇幅没有 inline，视为没写完。
 
 `prompt_hint` 写画面，不写文章论点，并点明风格。有对应技能时：手帐、拼贴、手绘感交给香蕉，写实、扁平商务、封面横幅交给豆包。没有这两项技能时，同一句 hint 交给 Agent 自带的生图能力。
 
@@ -185,6 +211,16 @@ aspect 会直接传给配图脚本（`generate_image.py --aspect <值>`）。只
 ### 原则 1：第一人称、说人话
 
 多用"我"、"你"，少用"大家"、"我们"、"各位读者"。一对一对话，不是台上演讲。
+
+**禁止主持人口吻 / 提纲式套话。** 正常人聊天不会先报流程。下面这类一律不要写，直接说事、直接给判断：
+
+- 「我先说结论」「先说结论」「结论先行」「一句话总结」
+- 「简单来说」「说白了就是」「换句话说」（可偶尔用一句，不要当段首口头禅）
+- 「接下来我分三点讲」「下面分三部分」「首先…其次…最后…」（写成自然段落，不要报幕）
+- 「很多人不知道的是」「今天跟你聊一个」「看完你就懂了」「划重点」
+- 「其实吧」「坦白讲」「客观地说」「不得不说」
+
+要给结论就**直接写那句判断**，前面不要加「我先说结论：」。要列步骤就直接 `1. 2. 3.` 或分段写，不要先宣布「我分三点」。
 
 ### 原则 2：真实经历优先
 
@@ -230,14 +266,66 @@ aspect 会直接传给配图脚本（`generate_image.py --aspect <值>`）。只
 | **有面子** | 转发显得我懂 / 我有品味（深度、洞察） |
 | **共鸣** | 这就是在说我 / 我朋友（情绪、故事） |
 
+## 上传到微信草稿箱
+
+默认不上传。用户要求上传草稿时，用脚本把本地成稿写入草稿箱，并调用草稿详情接口校验。
+
+### 前置：AppID / AppSecret / IP 白名单
+
+`.env`（技能包根目录，已 gitignore）：
+
+```
+WECHAT_APPID=
+WECHAT_APPSECRET=
+```
+
+引导用户配置（没有密钥时不要编造上传成功）：
+
+1. 打开 [微信开发者平台](https://developers.weixin.qq.com/console)，进入对应公众号。
+2. **基础信息**里复制 **AppID**；**开发密钥**里重置或查看 **AppSecret**（平台不保存旧 Secret，忘了就重置）。
+3. 同一区域配置 **IP 白名单**，填上本机出口 IP。未配置会返回 `40164`，拿不到 access_token。
+4. 把 AppID、AppSecret 写入 `.env` 后继续。
+
+你截图里的「基础信息 / 开发密钥 / IP 白名单」就是上述位置。
+
+### 上传流程（脚本已封装）
+
+用户只有 **md + images/**、没有 html 时，脚本会**先调用** `md_to_html.py` 转出同名 html，再上传；也可直接传目录或 `.md` / `.html`。
+
+```bash
+# 推荐：成稿目录（只有 md 也会自动转 html）
+python scripts/upload_draft.py "YYYYMMDD-HHmm-文章名"
+# 或显式指定
+python scripts/upload_draft.py "YYYYMMDD-HHmm-文章名/文章名.md"
+python scripts/upload_draft.py "YYYYMMDD-HHmm-文章名/文章名.html"
+```
+
+脚本顺序：
+
+1. 若目标是 md、或目录内只有 md → 先跑 `scripts/md_to_html.py` 生成同名 `.html`
+2. `GET /cgi-bin/token` 取 [access_token](https://developers.weixin.qq.com/doc/subscription/api/base/api_getaccesstoken.html)
+3. 从正文抽出 H1 作为草稿 `title` 后，**删掉正文里的首个 H1**（否则会和公众号顶部标题重复成双标题）
+4. 正文里每个本地 `images/*`（封面除外）→ [uploadimg](https://developers.weixin.qq.com/doc/subscription/api/material/permanent/api_uploadimage.html)（jpg/png，**< 1MB**），**把 HTML 里对应 `src` 换成微信返回的 url**
+5. 替换后的正文另存为同目录 `文章名.wx.html`，便于核对；提交草稿用的也是这份已替换 HTML
+6. `images/cover.*` → [add_material type=image](https://developers.weixin.qq.com/doc/subscription/api/material/permanent/api_addmaterial.html)，得到封面 `thumb_media_id`（封面不放正文，避免重复）
+7. `POST /cgi-bin/draft/add` [新增草稿](https://developers.weixin.qq.com/doc/subscription/api/draftbox/draftmanage/api_draft_add.html)；**`author` 固定为空**（顶部已有公众号名，再传会双作者）
+8. `POST /cgi-bin/draft/get` [获取草稿详情](https://developers.weixin.qq.com/doc/subscription/api/draftbox/draftmanage/api_getdraft.html)，核对标题一致才算成功
+
+限制：标题 ≤ 32 字；摘要 ≤ 120 字；正文图必须是 uploadimg 的 url，外部图会被过滤。不传作者字段内容。
+
+用户已给现成目录（md 或 html）且 `.env` 配好时，可跳过写稿直接上传。写稿后用户说「发草稿」时，在本篇目录上接着跑上传。
+
 ## 交稿前自检
 
-- [ ] 已建 `YYYYMMDD-HHmm-文章名/`，正文在文件夹根下，图在 `images/`
-- [ ] 内部已选定模板、标题公式和转发触发器，正文按它们写完
-- [ ] 标题 13–25 字，且正文兑现
-- [ ] 文件里没有 YAML，也没有模板名、公式名、summary、share_trigger
-- [ ] cover `aspect: 21:9`；中长文 inline ≥ 2 且为 `16:9`
+- [ ] 已判断正文来源：有现成 md 则沿用，无则按技能包生成（未擅自重写用户稿）
+- [ ] 已建或沿用 `YYYYMMDD-HHmm-文章名/`（或用户指定目录），正文在文件夹根下，图在 `images/`
+- [ ] 无现成 md 时：内部已选定模板、标题公式和转发触发器，正文按它们写完
+- [ ] 无现成 md 时：标题 13–25 字（上传草稿时还须 ≤ 32 字），且正文兑现；有现成 md 时标题以原文为准（上传仍须 ≤ 32 字）
+- [ ] 新写稿时：文件里没有 YAML，也没有模板名、公式名、summary、share_trigger
+- [ ] 需出图时：cover `aspect: 21:9`；中长文 inline ≥ 2 且为 `16:9`（现成 md 已有图则可跳过补位）
 - [ ] 出图后占位符已换成 `images/<id>.…` 相对路径
 - [ ] 默认已生成同名 `.html`；仅当用户明确要求不转时才跳过
-- [ ] 3–5 句金句单独成段
+- [ ] 若用户要求发草稿：`.env` 有 AppID/AppSecret，白名单已配，`upload_draft.py` 成功且 draft/get 校验通过
+- [ ] 无现成 md 时：3–5 句金句单独成段
+- [ ] 没有「我先说结论 / 接下来分几点 / 划重点 / 今天跟你聊」等报幕式套话；读起来像正常人说话
 - [ ] 没有 [references/compliance.md](references/compliance.md) 里的红线用语和导流

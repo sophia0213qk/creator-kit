@@ -12,6 +12,9 @@ venv/
 # packaging artifacts
 *.zip
 
+# local TTS model weights (multi-GB)
+**/Qwen3-TTS-*/
+
 # os / editor
 .DS_Store
 Thumbs.db

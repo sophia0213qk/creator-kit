@@ -1,11 +1,11 @@
 ---
 name: doubao-seedream-4-5
 version: 1.0.0
-display_name: 公众号抖音小红书文生图
+display_name: 豆包生图
 display_name_en: Doubao Seedream 4.5 Image Generation
 description: >-
   调用火山方舟 Doubao Seedream 4.5 文生图 / 图生图 / 组图 API（Model ID: doubao-seedream-4-5-251128）。
-  当用户提到豆包生图、Seedream 4.5、文生图、图生图、多图融合、组图生成，或要生成/编辑图片时使用。
+  当用户提到豆包生图、Seedream 4.5、文生图、图生图、多图融合、组图生成，或要生成/编辑图片时使用。公众号、小红书、抖音等图文平台常用尺寸。
 description_zh: >-
   基于火山方舟 Doubao Seedream 4.5 的文生图技能，支持文生图、图生图、多图融合与组图生成，
   并内置公众号、小红书、抖音等图文平台常用尺寸。
