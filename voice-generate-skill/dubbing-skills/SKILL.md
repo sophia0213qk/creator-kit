@@ -1,15 +1,22 @@
 ---
-name: dubbing-skills
-description: 将长文稿/文章转换为配音稿 JSON，支持智能切分、情感分析、多角色识别。当用户需要将文章转语音、制作有声书、处理多角色对话配音时，按本规范生成配音稿。
+name: dubbing-script
+version: 1.0.0
+display_name: 配音稿生成
+display_name_en: Dubbing Script Generator
+description: >-
+  将长文稿/文章转为配音稿 JSON：智能切分、情感分析、多角色识别。
+  当用户要把文章转语音、做有声书或多角色对话配音时，按本规范生成配音稿。
+description_zh: >-
+  把长文稿整理成结构化配音稿 JSON，供 Qwen3-TTS 批量合成使用。
+description_en: >-
+  Convert long-form text into structured dubbing JSON for batch Qwen3-TTS synthesis.
 ---
 
-# 配音稿生成技能
+# 配音稿生成
 
-将长文稿转换为结构化配音稿 JSON，用于批量 TTS 生成。
+将长文稿转换为结构化配音稿 JSON，用于批量 TTS 生成。本文件是 [../SKILL.md](../SKILL.md) 的子规范。
 
----
-
-## 🎯 使用场景
+## 使用场景
 
 - 文章 / 博客 → 有声版本
 - 剧本 / 小说 → 有声书
